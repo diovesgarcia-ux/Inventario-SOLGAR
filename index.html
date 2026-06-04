@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<!-- saved from url=(0070)file:///Users/diovesgarciasanmartin/Downloads/solgar_inventario_4.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLGAR – Inventario del Taller</title>
+<link href="./SOLGAR – Inventario del Taller_files/css2" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0e0e0e; --bg2:#161616; --bg3:#1e1e1e;
+    --border:#2a2a2a; --border2:#3a3a3a;
+    --accent:#e8a020; --accent2:#c47c10; --accent-glow:rgba(232,160,32,0.12);
+    --text:#f0ede8; --text2:#a09990; --text3:#6a6560;
+    --red:#e24b4a; --green:#3d9e5a; --blue:#378add;
+    --cat-herramienta:#e8a020; --cat-consumible:#3d9e5a; --cat-equipo:#378add; --cat-compras:#e24b4a;
+    --font-display:'Bebas Neue',sans-serif; --font-body:'IBM Plex Sans',sans-serif; --font-mono:'IBM Plex Mono',monospace;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font-body); min-height:100vh; overflow-x:hidden; }
+
+  /* SYNC INDICATOR */
+  #sync-bar {
+    position:fixed; top:0; left:0; right:0; height:3px; background:transparent; z-index:9999; transition:all 0.3s;
+  }
+  #sync-bar.syncing { background:linear-gradient(90deg,var(--accent),transparent); animation:syncpulse 1s infinite; }
+  #sync-bar.ok { background:var(--green); animation:none; }
+  #sync-bar.error { background:var(--red); animation:none; }
+  @keyframes syncpulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .sync-status {
+    display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text3); letter-spacing:1px;
+  }
+  .sync-dot { width:7px; height:7px; border-radius:50%; background:var(--text3); transition:background 0.3s; flex-shrink:0; }
+  .sync-dot.syncing { background:var(--accent); animation:syncpulse 0.8s infinite; }
+  .sync-dot.ok { background:var(--green); }
+  .sync-dot.error { background:var(--red); }
+
+  /* HEADER */
+  header {
+    position:relative; background:var(--bg2); border-bottom:1px solid var(--border);
+    padding:0 2rem; display:flex; align-items:center; justify-content:space-between;
+    height:72px; overflow:hidden;
+  }
+  header::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--accent); }
+  .logo-block { display:flex; align-items:baseline; gap:12px; }
+  .logo { font-family:var(--font-display); font-size:2.8rem; color:var(--accent); letter-spacing:6px; line-height:1; }
+  .logo-sub { font-size:11px; color:var(--text3); letter-spacing:3px; text-transform:uppercase; font-weight:500; }
+  .header-actions { display:flex; gap:10px; align-items:center; }
+  .btn {
+    display:inline-flex; align-items:center; gap:6px; padding:8px 16px;
+    border:1px solid var(--border2); background:transparent; color:var(--text2);
+    font-family:var(--font-body); font-size:13px; cursor:pointer; border-radius:2px;
+    transition:all 0.15s; letter-spacing:0.5px;
+  }
+  .btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-glow); }
+  .btn-accent { background:var(--accent); color:#000; border-color:var(--accent); font-weight:600; }
+  .btn-accent:hover { background:var(--accent2); border-color:var(--accent2); color:#000; }
+  .btn svg { width:14px; height:14px; }
+
+  /* PORTADA */
+  #portada {
+    position:fixed; inset:0; z-index:1000; background:var(--bg);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .portada-bg {
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(255,255,255,0.015) 40px,rgba(255,255,255,0.015) 41px),
+               repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(255,255,255,0.015) 40px,rgba(255,255,255,0.015) 41px);
+  }
+  .portada-line { width:1px; height:80px; background:linear-gradient(to bottom,transparent,var(--accent)); margin:0 auto 2rem; }
+  .portada-logo { font-family:var(--font-display); font-size:9rem; color:var(--accent); letter-spacing:24px; line-height:0.9; text-align:center; position:relative; z-index:1; text-shadow:0 0 80px rgba(232,160,32,0.3); }
+  .portada-tagline { font-size:12px; color:var(--text3); letter-spacing:8px; text-transform:uppercase; margin-top:1rem; font-weight:500; position:relative; z-index:1; }
+  .portada-divider { width:60px; height:2px; background:var(--accent); margin:2rem auto; position:relative; z-index:1; }
+  .portada-subtitle { font-size:15px; color:var(--text2); letter-spacing:3px; text-transform:uppercase; position:relative; z-index:1; }
+  .portada-btn { margin-top:3rem; padding:14px 40px; font-size:14px; letter-spacing:4px; text-transform:uppercase; font-weight:600; cursor:pointer; background:transparent; border:1px solid var(--accent); color:var(--accent); font-family:var(--font-body); transition:all 0.2s; position:relative; z-index:1; }
+  .portada-btn:hover { background:var(--accent); color:#000; }
+  .portada-corner { position:absolute; width:40px; height:40px; border-color:var(--accent); border-style:solid; opacity:0.4; }
+  .portada-corner.tl { top:2rem; left:2rem; border-width:2px 0 0 2px; }
+  .portada-corner.tr { top:2rem; right:2rem; border-width:2px 2px 0 0; }
+  .portada-corner.bl { bottom:2rem; left:2rem; border-width:0 0 2px 2px; }
+  .portada-corner.br { bottom:2rem; right:2rem; border-width:0 2px 2px 0; }
+  .portada-connecting { position:relative; z-index:1; margin-top:1.5rem; font-size:12px; color:var(--text3); letter-spacing:2px; display:none; }
+
+  /* MAIN */
+  .app { display:none; }
+  .app.visible { display:block; }
+
+  nav { background:var(--bg2); border-bottom:1px solid var(--border); display:flex; padding:0 2rem; overflow-x:auto; }
+  .nav-tab { padding:14px 20px; font-size:13px; cursor:pointer; color:var(--text3); border-bottom:2px solid transparent; transition:all 0.15s; letter-spacing:0.5px; display:flex; align-items:center; gap:8px; font-weight:500; white-space:nowrap; }
+  .nav-tab:hover { color:var(--text); }
+  .nav-tab.active { color:var(--text); border-bottom-color:var(--accent); }
+  .nav-tab .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .dot-herramienta { background:var(--cat-herramienta); }
+  .dot-consumible { background:var(--cat-consumible); }
+  .dot-equipo { background:var(--cat-equipo); }
+  .dot-compras { background:var(--cat-compras); }
+
+  .content { padding:2rem; max-width:1400px; margin:0 auto; }
+
+  .stats-bar { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:2rem; }
+  .stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:2px; padding:1rem 1.25rem; position:relative; overflow:hidden; }
+  .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+  .stat-card.h::before { background:var(--cat-herramienta); }
+  .stat-card.c::before { background:var(--cat-consumible); }
+  .stat-card.e::before { background:var(--cat-equipo); }
+  .stat-card.p::before { background:var(--cat-compras); }
+  .stat-label { font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
+  .stat-value { font-family:var(--font-mono); font-size:2rem; font-weight:500; }
+  .stat-value.h { color:var(--cat-herramienta); }
+  .stat-value.c { color:var(--cat-consumible); }
+  .stat-value.e { color:var(--cat-equipo); }
+  .stat-value.p { color:var(--cat-compras); }
+
+  .toolbar { display:flex; gap:10px; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; }
+  .search-wrap { flex:1; min-width:200px; position:relative; }
+  .search-wrap svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); width:15px; height:15px; color:var(--text3); pointer-events:none; }
+  .search-input { width:100%; background:var(--bg2); border:1px solid var(--border); color:var(--text); padding:9px 12px 9px 38px; font-family:var(--font-body); font-size:14px; border-radius:2px; outline:none; transition:border 0.15s; }
+  .search-input:focus { border-color:var(--accent); }
+  .search-input::placeholder { color:var(--text3); }
+  select.filter { background:var(--bg2); border:1px solid var(--border); color:var(--text2); padding:9px 12px; font-family:var(--font-body); font-size:13px; border-radius:2px; outline:none; cursor:pointer; }
+
+  .item-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+  .item-card { background:var(--bg2); border:1px solid var(--border); border-radius:2px; overflow:hidden; transition:border-color 0.15s,transform 0.1s; }
+  .item-card:hover { border-color:var(--border2); transform:translateY(-1px); }
+  .item-card.herramienta { border-top:2px solid var(--cat-herramienta); }
+  .item-card.consumible { border-top:2px solid var(--cat-consumible); }
+  .item-card.equipo { border-top:2px solid var(--cat-equipo); }
+  .item-img { width:100%; height:160px; object-fit:cover; display:block; background:var(--bg3); border-bottom:1px solid var(--border); }
+  .item-img-placeholder { width:100%; height:160px; background:var(--bg3); border-bottom:1px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
+  .item-img-placeholder svg { width:36px; height:36px; color:var(--border2); }
+  .item-img-placeholder span { font-size:11px; color:var(--text3); letter-spacing:1px; }
+  .item-body { padding:1rem; }
+  .item-cat-badge { display:inline-block; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; padding:2px 8px; border-radius:1px; margin-bottom:8px; font-weight:600; }
+  .badge-herramienta { background:rgba(232,160,32,0.15); color:var(--cat-herramienta); }
+  .badge-consumible { background:rgba(61,158,90,0.15); color:var(--cat-consumible); }
+  .badge-equipo { background:rgba(55,138,221,0.15); color:var(--cat-equipo); }
+  .item-name { font-size:15px; font-weight:600; color:var(--text); margin-bottom:4px; line-height:1.3; }
+  .item-desc { font-size:13px; color:var(--text2); line-height:1.5; margin-bottom:10px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .item-meta { display:flex; align-items:center; justify-content:space-between; }
+  .item-qty { font-family:var(--font-mono); font-size:12px; color:var(--text3); }
+  .item-qty span { color:var(--text2); font-weight:500; }
+  .item-actions { display:flex; gap:6px; }
+  .icon-btn { width:28px; height:28px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); background:transparent; color:var(--text3); cursor:pointer; border-radius:2px; transition:all 0.15s; }
+  .icon-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .icon-btn.del:hover { border-color:var(--red); color:var(--red); }
+  .icon-btn svg { width:13px; height:13px; }
+
+  .empty-state { text-align:center; padding:4rem 2rem; color:var(--text3); }
+  .empty-state svg { width:48px; height:48px; margin:0 auto 1rem; display:block; opacity:0.3; }
+  .empty-state p { font-size:14px; letter-spacing:0.5px; }
+
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:500; align-items:center; justify-content:center; padding:1rem; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--bg2); border:1px solid var(--border2); border-radius:2px; width:100%; max-width:580px; max-height:90vh; overflow-y:auto; }
+  .modal-header { padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:var(--bg2); z-index:1; }
+  .modal-title { font-family:var(--font-display); font-size:1.6rem; letter-spacing:3px; color:var(--text); }
+  .modal-close { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); background:transparent; color:var(--text3); cursor:pointer; border-radius:2px; transition:all 0.15s; }
+  .modal-close:hover { border-color:var(--red); color:var(--red); }
+  .modal-body { padding:1.5rem; }
+  .form-group { margin-bottom:1.25rem; }
+  label.flabel { display:block; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:6px; font-weight:500; }
+  input.finput, textarea.finput, select.finput { width:100%; background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:10px 12px; font-family:var(--font-body); font-size:14px; border-radius:2px; outline:none; transition:border 0.15s; }
+  input.finput:focus, textarea.finput:focus, select.finput:focus { border-color:var(--accent); }
+  textarea.finput { resize:vertical; min-height:90px; }
+  select.finput option { background:var(--bg3); }
+  .img-upload-area { border:1px dashed var(--border2); border-radius:2px; padding:2rem; text-align:center; cursor:pointer; transition:all 0.15s; position:relative; background:var(--bg3); }
+  .img-upload-area:hover { border-color:var(--accent); }
+  .img-upload-area svg { width:32px; height:32px; color:var(--text3); margin:0 auto 8px; display:block; }
+  .img-upload-area p { font-size:13px; color:var(--text3); }
+  .img-preview { width:100%; max-height:200px; object-fit:cover; border-radius:2px; margin-top:10px; display:none; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .modal-footer { padding:1rem 1.5rem; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; position:sticky; bottom:0; background:var(--bg2); }
+
+  .detail-img { width:100%; max-height:280px; object-fit:cover; border-bottom:1px solid var(--border); }
+  .detail-body { padding:1.5rem; }
+  .detail-name { font-size:1.4rem; font-weight:600; margin-bottom:6px; }
+  .detail-desc { color:var(--text2); font-size:14px; line-height:1.6; margin-bottom:1.5rem; }
+  .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .detail-field { background:var(--bg3); padding:10px 14px; border-radius:2px; }
+  .detail-field-label { font-size:11px; color:var(--text3); letter-spacing:1px; text-transform:uppercase; margin-bottom:3px; }
+  .detail-field-val { font-size:14px; color:var(--text); font-weight:500; }
+
+  .compra-urgencia { display:inline-block; font-size:10px; letter-spacing:1px; padding:2px 8px; border-radius:1px; font-weight:600; }
+  .urgencia-alta { background:rgba(226,75,74,0.15); color:var(--red); }
+  .urgencia-media { background:rgba(232,160,32,0.15); color:var(--accent); }
+  .urgencia-baja { background:rgba(61,158,90,0.15); color:var(--green); }
+  .compra-check { width:18px; height:18px; border:1px solid var(--border2); border-radius:2px; cursor:pointer; transition:all 0.15s; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .compra-check.done { background:var(--green); border-color:var(--green); }
+  .compra-check svg { width:11px; height:11px; color:#fff; display:none; }
+  .compra-check.done svg { display:block; }
+  .compra-item-row { background:var(--bg2); border:1px solid var(--border); border-radius:2px; padding:14px 16px; display:flex; align-items:center; gap:14px; transition:opacity 0.2s; }
+  .compra-item-row.done-row { opacity:0.45; }
+  .compra-list { display:flex; flex-direction:column; gap:10px; }
+  .compra-info { flex:1; }
+  .compra-nombre { font-size:14px; font-weight:500; color:var(--text); margin-bottom:2px; }
+  .compra-detalle { font-size:12px; color:var(--text3); }
+  .compra-meta { display:flex; align-items:center; gap:10px; }
+
+  .section { display:none; }
+  .section.active { display:block; }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(80px); background:var(--bg2); border:1px solid var(--border2); color:var(--text2); padding:10px 20px; border-radius:2px; font-size:13px; z-index:9999; transition:transform 0.3s; pointer-events:none; white-space:nowrap; }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+  .toast.success { border-color:var(--green); color:var(--green); }
+  .toast.error { border-color:var(--red); color:var(--red); }
+
+  #sync-bar { position:fixed; top:0; left:0; right:0; height:3px; z-index:9999; }
+  @keyframes syncpulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+  @media(max-width:600px){
+    .stats-bar{grid-template-columns:1fr 1fr;}
+    .form-row{grid-template-columns:1fr;}
+    .portada-logo{font-size:5rem;letter-spacing:12px;}
+    .header-actions .btn span{display:none;}
+  }
+</style>
+<script src="./SOLGAR – Inventario del Taller_files/xlsx.full.min.js"></script><script src="./SOLGAR – Inventario del Taller_files/html2canvas.min.js"></script></head>
+<body>
+<div id="sync-bar" style="background: transparent; animation: auto ease 0s 1 normal none running none;"></div>
+<div class="toast" id="toast">Excel exportado ✓</div>
+
+<!-- PORTADA -->
+<div id="portada" style="transition: opacity 0.5s; opacity: 0; display: none;">
+  <div class="portada-bg"></div>
+  <div class="portada-corner tl"></div>
+  <div class="portada-corner tr"></div>
+  <div class="portada-corner bl"></div>
+  <div class="portada-corner br"></div>
+  <div class="portada-line"></div>
+  <div class="portada-logo">SOLGAR</div>
+  <div class="portada-tagline">Taller de Metalmecánica &amp; Automatización</div>
+  <div class="portada-divider"></div>
+  <div class="portada-subtitle">Sistema de Inventario</div>
+  <button class="portada-btn" onclick="entrar()">INGRESAR →</button>
+  <div class="portada-connecting" id="portada-connecting">⟳ Conectando a la nube...</div>
+</div>
+
+<!-- APP -->
+<div class="app visible" id="app">
+  <header>
+    <div class="logo-block">
+      <span class="logo">SOLGAR</span>
+      <span class="logo-sub" style="display:flex;flex-direction:column;gap:1px;">
+        Inventario del Taller
+        <span class="sync-status" id="sync-status">
+          <span class="sync-dot ok" id="sync-dot"></span>
+          <span id="sync-text">Sincronizado ✓</span>
+        </span>
+      </span>
+    </div>
+    <div class="header-actions">
+      <button class="btn" onclick="exportarExcel()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        <span>Excel</span>
+      </button>
+      <button class="btn" onclick="exportarImagen()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <span>Imagen</span>
+      </button>
+      <button class="btn btn-accent" onclick="abrirModal()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <span>Agregar ítem</span>
+      </button>
+    </div>
+  </header>
+
+  <nav>
+    <div class="nav-tab active" onclick="cambiarTab(&#39;todo&#39;)" id="tab-todo"><span class="dot" style="background:#666"></span> Todo</div>
+    <div class="nav-tab" onclick="cambiarTab(&#39;herramienta&#39;)" id="tab-herramienta"><span class="dot dot-herramienta"></span> Herramientas</div>
+    <div class="nav-tab" onclick="cambiarTab(&#39;consumible&#39;)" id="tab-consumible"><span class="dot dot-consumible"></span> Consumibles</div>
+    <div class="nav-tab" onclick="cambiarTab(&#39;equipo&#39;)" id="tab-equipo"><span class="dot dot-equipo"></span> Equipos</div>
+    <div class="nav-tab" onclick="cambiarTab(&#39;compras&#39;)" id="tab-compras"><span class="dot dot-compras"></span> Lista de Compras</div>
+  </nav>
+
+  <div class="content">
+    <div class="stats-bar">
+      <div class="stat-card h"><div class="stat-label">Herramientas</div><div class="stat-value h" id="stat-h">19</div></div>
+      <div class="stat-card c"><div class="stat-label">Consumibles</div><div class="stat-value c" id="stat-c">0</div></div>
+      <div class="stat-card e"><div class="stat-label">Equipos</div><div class="stat-value e" id="stat-e">0</div></div>
+      <div class="stat-card p"><div class="stat-label">Por Comprar</div><div class="stat-value p" id="stat-p">0</div></div>
+    </div>
+
+    <div class="toolbar" id="toolbar-inventario">
+      <div class="search-wrap">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input class="search-input" type="text" placeholder="Buscar en inventario..." oninput="filtrarItems()" id="search-input">
+      </div>
+      <select class="filter" id="filter-estado" onchange="filtrarItems()">
+        <option value="">Todos los estados</option>
+        <option value="disponible">Disponible</option>
+        <option value="en_uso">En uso</option>
+        <option value="mantenimiento">En mantenimiento</option>
+        <option value="dañado">Dañado</option>
+      </select>
+    </div>
+
+    <div class="section active" id="sec-todo">
+      <div class="item-grid" id="grid-todo"><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Taladro inalámbrico</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Dewall</div>
+      <div class="item-desc">Taladro dewall amarillo</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span> · <span>Taller</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpth0bmaqa5m&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpth0bmaqa5m&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpth0bmaqa5m&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Destornillador inalámbrico</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Dewall</div>
+      <div class="item-desc">Destornillador amarillo Dewall</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span> · <span>Taller</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpth1zds9l68&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpth1zds9l68&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpth1zds9l68&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Compresor grande de aire</div>
+      
+      <div class="item-desc">Sin descripción.</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpti3r8aedvw&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpti3r8aedvw&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpti3r8aedvw&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Taladro inalámbrico Bauker</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Bauker</div>
+      <div class="item-desc">Taladro inalámbrico con dos baterías y maleta</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpwnkay8a2vj&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpwnkay8a2vj&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpwnkay8a2vj&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Pulidora Bauker</div>
+      
+      <div class="item-desc">Sin descripción.</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpwnkuyzd7ly&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpwnkuyzd7ly&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpwnkuyzd7ly&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Taladro Bauker</div>
+      
+      <div class="item-desc">Sin descripción.</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpwnlev25n80&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpwnlev25n80&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpwnlev25n80&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Compresor pequeño para pintura</div>
+      
+      <div class="item-desc">Sin descripción.</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpwnmrsik4du&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpwnmrsik4du&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpwnmrsik4du&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Sierra de banco Stalin</div>
+      
+      <div class="item-desc">Sierra para corte de laminas de madera</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpztowixf9qr&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpztowixf9qr&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpztowixf9qr&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Caladora</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Stanli</div>
+      <div class="item-desc">Caladora de sierra</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpztptxi76is&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpztptxi76is&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpztptxi76is&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Router de mano pequeña</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">China</div>
+      <div class="item-desc">Router pequeña</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpztqi4ufmra&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpztqi4ufmra&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpztqi4ufmra&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Router grande</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Stanli</div>
+      <div class="item-desc">Router</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpztu8ihddv0&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpztu8ihddv0&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpztu8ihddv0&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Sopladora Stanli</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Stanli</div>
+      <div class="item-desc">Sopladora stanli</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpztxv98qkka&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpztxv98qkka&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpztxv98qkka&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Sierra de corte para hierro</div>
+      
+      <div class="item-desc">Sin descripción.</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span> · <span>PAPA</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpztz8z9qpnq&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpztz8z9qpnq&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpztz8z9qpnq&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Torquimietro manual</div>
+      
+      <div class="item-desc">Torquimetro manual</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpzu0b1oeq73&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpzu0b1oeq73&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpzu0b1oeq73&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Fresadora neumatica pequeña</div>
+      
+      <div class="item-desc">Fresadora neumática pequeña</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpzu1qy4iqxn&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpzu1qy4iqxn&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpzu1qy4iqxn&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Multimetro digital</div>
+      
+      <div class="item-desc">Multimetro Electronico digital</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpzu4cfgmh07&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpzu4cfgmh07&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpzu4cfgmh07&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Cautin weller</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Weller</div>
+      <div class="item-desc">Cautin para soldadura electronica</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpzu4w4k59z7&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpzu4w4k59z7&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpzu4w4k59z7&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Cautin weller</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Weller</div>
+      <div class="item-desc">Cautin para soldadura electronica</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpzu5cxaperk&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpzu5cxaperk&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpzu5cxaperk&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Provador de corriente</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Fluke</div>
+      <div class="item-desc">Probador de corriente fluye</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpzu5zzclwdb&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpzu5zzclwdb&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpzu5zzclwdb&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div></div>
+      <div class="empty-state" id="empty-todo" style="display:none">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"></path><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"></path></svg>
+        <p>No hay ítems en el inventario.<br>Usa "Agregar ítem" para comenzar.</p>
+      </div>
+    </div>
+    <div class="section" id="sec-herramienta">
+      <div class="item-grid" id="grid-herramienta"><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Taladro inalámbrico</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Dewall</div>
+      <div class="item-desc">Taladro dewall amarillo</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span> · <span>Taller</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpth0bmaqa5m&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpth0bmaqa5m&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpth0bmaqa5m&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Destornillador inalámbrico</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Dewall</div>
+      <div class="item-desc">Destornillador amarillo Dewall</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span> · <span>Taller</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpth1zds9l68&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpth1zds9l68&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpth1zds9l68&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Compresor grande de aire</div>
+      
+      <div class="item-desc">Sin descripción.</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpti3r8aedvw&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpti3r8aedvw&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpti3r8aedvw&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Taladro inalámbrico Bauker</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Bauker</div>
+      <div class="item-desc">Taladro inalámbrico con dos baterías y maleta</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpwnkay8a2vj&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpwnkay8a2vj&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpwnkay8a2vj&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Pulidora Bauker</div>
+      
+      <div class="item-desc">Sin descripción.</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpwnkuyzd7ly&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpwnkuyzd7ly&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpwnkuyzd7ly&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Taladro Bauker</div>
+      
+      <div class="item-desc">Sin descripción.</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpwnlev25n80&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpwnlev25n80&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpwnlev25n80&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Compresor pequeño para pintura</div>
+      
+      <div class="item-desc">Sin descripción.</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpwnmrsik4du&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpwnmrsik4du&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpwnmrsik4du&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Sierra de banco Stalin</div>
+      
+      <div class="item-desc">Sierra para corte de laminas de madera</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpztowixf9qr&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpztowixf9qr&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpztowixf9qr&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Caladora</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Stanli</div>
+      <div class="item-desc">Caladora de sierra</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpztptxi76is&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpztptxi76is&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpztptxi76is&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Router de mano pequeña</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">China</div>
+      <div class="item-desc">Router pequeña</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpztqi4ufmra&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpztqi4ufmra&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpztqi4ufmra&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Router grande</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Stanli</div>
+      <div class="item-desc">Router</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpztu8ihddv0&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpztu8ihddv0&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpztu8ihddv0&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Sopladora Stanli</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Stanli</div>
+      <div class="item-desc">Sopladora stanli</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpztxv98qkka&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpztxv98qkka&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpztxv98qkka&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Sierra de corte para hierro</div>
+      
+      <div class="item-desc">Sin descripción.</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span> · <span>PAPA</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpztz8z9qpnq&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpztz8z9qpnq&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpztz8z9qpnq&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Torquimietro manual</div>
+      
+      <div class="item-desc">Torquimetro manual</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpzu0b1oeq73&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpzu0b1oeq73&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpzu0b1oeq73&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Fresadora neumatica pequeña</div>
+      
+      <div class="item-desc">Fresadora neumática pequeña</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpzu1qy4iqxn&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpzu1qy4iqxn&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpzu1qy4iqxn&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Multimetro digital</div>
+      
+      <div class="item-desc">Multimetro Electronico digital</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpzu4cfgmh07&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpzu4cfgmh07&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpzu4cfgmh07&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Cautin weller</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Weller</div>
+      <div class="item-desc">Cautin para soldadura electronica</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpzu4w4k59z7&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpzu4w4k59z7&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpzu4w4k59z7&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Cautin weller</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Weller</div>
+      <div class="item-desc">Cautin para soldadura electronica</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpzu5cxaperk&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpzu5cxaperk&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpzu5cxaperk&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div><div class="item-card herramienta">
+    
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+      <span>SIN IMAGEN</span>
+    </div>
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-herramienta">Herramienta</span>
+        <span style="font-size:11px;color:#3d9e5a;letter-spacing:0.5px;">Disponible</span>
+      </div>
+      <div class="item-name">Provador de corriente</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">Fluke</div>
+      <div class="item-desc">Probador de corriente fluye</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>1</span></div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle(&#39;mpzu5zzclwdb&#39;)" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></button>
+          <button class="icon-btn" onclick="editarItem(&#39;mpzu5zzclwdb&#39;)" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem(&#39;mpzu5zzclwdb&#39;)" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg></button>
+        </div>
+      </div>
+    </div></div></div>
+      <div class="empty-state" id="empty-herramienta" style="display:none"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"></path></svg><p>No hay herramientas registradas.</p></div>
+    </div>
+    <div class="section" id="sec-consumible">
+      <div class="item-grid" id="grid-consumible"></div>
+      <div class="empty-state" id="empty-consumible" style="display: block;"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path></svg><p>No hay consumibles registrados.</p></div>
+    </div>
+    <div class="section" id="sec-equipo">
+      <div class="item-grid" id="grid-equipo"></div>
+      <div class="empty-state" id="empty-equipo" style="display: block;"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg><p>No hay equipos registrados.</p></div>
+    </div>
+
+    <div class="section" id="sec-compras">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input class="search-input" type="text" placeholder="Buscar en lista de compras..." oninput="filtrarCompras()" id="search-compras">
+        </div>
+        <select class="filter" id="filter-urgencia" onchange="filtrarCompras()">
+          <option value="">Todas las urgencias</option>
+          <option value="alta">Alta</option>
+          <option value="media">Media</option>
+          <option value="baja">Baja</option>
+        </select>
+        <button class="btn" onclick="limpiarComprasCompletadas()">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:14px;height:14px"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg>
+          Limpiar compradas
+        </button>
+        <button class="btn btn-accent" onclick="abrirModalCompra()">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:14px;height:14px"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Agregar compra
+        </button>
+      </div>
+      <div class="compra-list" id="lista-compras"></div>
+      <div class="empty-state" id="empty-compras" style="display: block;">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.57l1.65-7.43H6"></path></svg>
+        <p>La lista de compras está vacía.<br>Agrega los materiales que necesitas.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL INVENTARIO -->
+<div class="modal-overlay" id="modal-inventario">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-inv-title">NUEVO ÍTEM</div>
+      <button class="modal-close" onclick="cerrarModal()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id">
+      <div class="form-group"><label class="flabel">Nombre del ítem *</label><input class="finput" type="text" id="f-nombre" placeholder="Ej: Esmeril angular 4.5&quot;"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="flabel">Categoría *</label><select class="finput" id="f-categoria"><option value="herramienta">Herramienta</option><option value="consumible">Consumible</option><option value="equipo">Equipo</option></select></div>
+        <div class="form-group"><label class="flabel">Estado</label><select class="finput" id="f-estado"><option value="disponible">Disponible</option><option value="en_uso">En uso</option><option value="mantenimiento">En mantenimiento</option><option value="dañado">Dañado</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="flabel">Cantidad</label><input class="finput" type="number" id="f-cantidad" placeholder="1" min="0" value="1"></div>
+        <div class="form-group"><label class="flabel">Ubicación</label><input class="finput" type="text" id="f-ubicacion" placeholder="Ej: Estante A3"></div>
+      </div>
+      <div class="form-group"><label class="flabel">Marca / Modelo</label><input class="finput" type="text" id="f-marca" placeholder="Ej: Bosch GWS 700"></div>
+      <div class="form-group"><label class="flabel">Descripción</label><textarea class="finput" id="f-descripcion" placeholder="Describe el ítem, sus características, uso y observaciones..."></textarea></div>
+      <div class="form-group">
+        <label class="flabel">Imagen</label>
+        <div class="img-upload-area" onclick="document.getElementById(&#39;f-imagen&#39;).click()">
+          <input type="file" id="f-imagen" accept="image/*" style="display:none" onchange="previewImagen(this)">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          <p>Haz clic para seleccionar una imagen</p>
+        </div>
+        <img class="img-preview" id="preview-img" alt="Vista previa">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-accent" id="btn-guardar-item" onclick="guardarItem()">Guardar ítem</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL COMPRA -->
+<div class="modal-overlay" id="modal-compra">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">NUEVA COMPRA</div>
+      <button class="modal-close" onclick="cerrarModalCompra()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-compra-id">
+      <div class="form-group"><label class="flabel">Nombre del material / ítem *</label><input class="finput" type="text" id="cf-nombre" placeholder="Ej: Disco de corte 4.5&quot; x50u"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="flabel">Urgencia</label><select class="finput" id="cf-urgencia"><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option></select></div>
+        <div class="form-group"><label class="flabel">Cantidad</label><input class="finput" type="text" id="cf-cantidad" placeholder="Ej: 2 unidades"></div>
+      </div>
+      <div class="form-group"><label class="flabel">Proveedor / Dónde comprar</label><input class="finput" type="text" id="cf-proveedor" placeholder="Ej: Ferretería Central"></div>
+      <div class="form-group"><label class="flabel">Notas / Especificaciones</label><textarea class="finput" id="cf-notas" placeholder="Marca preferida, especificaciones técnicas, precio estimado..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="cerrarModalCompra()">Cancelar</button>
+      <button class="btn btn-accent" id="btn-guardar-compra" onclick="guardarCompra()">Agregar a lista</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE -->
+<div class="modal-overlay" id="modal-detalle">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">DETALLE</div>
+      <button class="modal-close" onclick="cerrarDetalle()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <div id="detalle-content"></div>
+    <div class="modal-footer"><button class="btn btn-accent" id="btn-edit-detalle">Editar</button></div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBwuoDLvBNYdHWbSEARrCHGYsEM7-RHexk",
+  authDomain: "inventario-solgar.firebaseapp.com",
+  databaseURL: "https://inventario-solgar-default-rtdb.firebaseio.com",
+  projectId: "inventario-solgar",
+  storageBucket: "inventario-solgar.firebasestorage.app",
+  messagingSenderId: "25738160316",
+  appId: "1:25738160316:web:6186e1904b698ba6d948b9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ── Helpers UI ──────────────────────────────────────────────────────
+function setSyncStatus(state) {
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-text');
+  const bar = document.getElementById('sync-bar');
+  dot.className = 'sync-dot ' + state;
+  if(state==='syncing'){ txt.textContent='Sincronizando...'; bar.style.background='var(--accent)'; bar.style.animation='syncpulse 1s infinite'; }
+  else if(state==='ok'){ txt.textContent='Sincronizado ✓'; bar.style.background='var(--green)'; bar.style.animation='none'; setTimeout(()=>{ bar.style.background='transparent'; },2000); }
+  else { txt.textContent='Sin conexión'; bar.style.background='var(--red)'; bar.style.animation='none'; }
+}
+
+function toast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(()=>{ t.className='toast'; }, 2800);
+}
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+// ── State ────────────────────────────────────────────────────────────
+let itemsData = {};
+let comprasData = {};
+let tabActual = 'todo';
+let editandoId = null;
+let editandoCompraId = null;
+const catLabel = {herramienta:'Herramienta',consumible:'Consumible',equipo:'Equipo'};
+const estadoLabel = {disponible:'Disponible',en_uso:'En uso',mantenimiento:'En mantenimiento','dañado':'Dañado'};
+const estadoColor = {disponible:'#3d9e5a',en_uso:'#e8a020',mantenimiento:'#378add','dañado':'#e24b4a'};
+
+// ── Firebase listeners (realtime) ───────────────────────────────────
+setSyncStatus('syncing');
+
+onValue(ref(db,'items'), snap => {
+  itemsData = snap.val() || {};
+  setSyncStatus('ok');
+  renderAll();
+}, err => { setSyncStatus('error'); toast('Error de conexión','error'); });
+
+onValue(ref(db,'compras'), snap => {
+  comprasData = snap.val() || {};
+  renderAll();
+});
+
+// ── Render ───────────────────────────────────────────────────────────
+function renderAll() {
+  actualizarStats();
+  filtrarItems();
+  filtrarCompras();
+}
+
+function actualizarStats() {
+  const items = Object.values(itemsData);
+  const compras = Object.values(comprasData);
+  document.getElementById('stat-h').textContent = items.filter(i=>i.categoria==='herramienta').length;
+  document.getElementById('stat-c').textContent = items.filter(i=>i.categoria==='consumible').length;
+  document.getElementById('stat-e').textContent = items.filter(i=>i.categoria==='equipo').length;
+  document.getElementById('stat-p').textContent = compras.filter(c=>!c.done).length;
+}
+
+function filtrarItems() {
+  const q = (document.getElementById('search-input').value||'').toLowerCase();
+  const est = document.getElementById('filter-estado').value;
+  const todos = Object.entries(itemsData).map(([k,v])=>({...v,_key:k}));
+  const cats = ['todo','herramienta','consumible','equipo'];
+  cats.forEach(cat => {
+    const lista = cat==='todo' ? todos : todos.filter(i=>i.categoria===cat);
+    const filtrado = lista.filter(i=>{
+      const mq = !q || (i.nombre||'').toLowerCase().includes(q) || (i.descripcion||'').toLowerCase().includes(q) || (i.marca||'').toLowerCase().includes(q);
+      const me = !est || i.estado===est;
+      return mq && me;
+    });
+    const grid = document.getElementById('grid-'+cat);
+    const empty = document.getElementById('empty-'+cat);
+    if(!grid) return;
+    grid.innerHTML='';
+    empty.style.display = filtrado.length===0?'block':'none';
+    filtrado.forEach(item=>grid.appendChild(crearCard(item)));
+  });
+}
+
+function crearCard(item) {
+  const div = document.createElement('div');
+  div.className='item-card '+(item.categoria||'');
+  const eColor = estadoColor[item.estado]||'#666';
+  const eLabel = estadoLabel[item.estado]||item.estado||'';
+  div.innerHTML=`
+    ${item.imagen?`<img class="item-img" src="${item.imagen}" alt="${item.nombre}" loading="lazy">`:`
+    <div class="item-img-placeholder">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <span>SIN IMAGEN</span>
+    </div>`}
+    <div class="item-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="item-cat-badge badge-${item.categoria}">${catLabel[item.categoria]||''}</span>
+        <span style="font-size:11px;color:${eColor};letter-spacing:0.5px;">${eLabel}</span>
+      </div>
+      <div class="item-name">${item.nombre||''}</div>
+      ${item.marca?`<div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-family:var(--font-mono);">${item.marca}</div>`:''}
+      <div class="item-desc">${item.descripcion||'Sin descripción.'}</div>
+      <div class="item-meta">
+        <div class="item-qty">Cant: <span>${item.cantidad||1}</span>${item.ubicacion?` · <span>${item.ubicacion}</span>`:''}</div>
+        <div class="item-actions">
+          <button class="icon-btn" onclick="verDetalle('${item._key}')" title="Ver detalle"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></button>
+          <button class="icon-btn" onclick="editarItem('${item._key}')" title="Editar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="icon-btn del" onclick="eliminarItem('${item._key}')" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+        </div>
+      </div>
+    </div>`;
+  return div;
+}
+
+function filtrarCompras() {
+  const q = (document.getElementById('search-compras').value||'').toLowerCase();
+  const urg = document.getElementById('filter-urgencia').value;
+  const todos = Object.entries(comprasData).map(([k,v])=>({...v,_key:k}));
+  const filtrado = todos.filter(c=>{
+    const mq = !q || (c.nombre||'').toLowerCase().includes(q) || (c.notas||'').toLowerCase().includes(q);
+    const mu = !urg || c.urgencia===urg;
+    return mq && mu;
+  }).sort((a,b)=>({alta:0,media:1,baja:2}[a.urgencia]||1)-({alta:0,media:1,baja:2}[b.urgencia]||1));
+  const lista = document.getElementById('lista-compras');
+  const empty = document.getElementById('empty-compras');
+  lista.innerHTML='';
+  empty.style.display = filtrado.length===0?'block':'none';
+  filtrado.forEach(c=>lista.appendChild(crearCompraRow(c)));
+}
+
+function crearCompraRow(c) {
+  const div=document.createElement('div');
+  div.className='compra-item-row'+(c.done?' done-row':'');
+  const urgClass={alta:'urgencia-alta',media:'urgencia-media',baja:'urgencia-baja'}[c.urgencia]||'urgencia-media';
+  div.innerHTML=`
+    <div class="compra-check${c.done?' done':''}" onclick="toggleCompra('${c._key}')">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="compra-info">
+      <div class="compra-nombre" style="${c.done?'text-decoration:line-through;color:var(--text3)':''}">${c.nombre||''}</div>
+      <div class="compra-detalle">${[c.cantidad,c.proveedor].filter(Boolean).join(' · ')}</div>
+      ${c.notas?`<div class="compra-detalle" style="margin-top:2px;font-style:italic;">${c.notas}</div>`:''}
+    </div>
+    <div class="compra-meta">
+      <span class="compra-urgencia ${urgClass}">${(c.urgencia||'').toUpperCase()}</span>
+      <button class="icon-btn" onclick="editarCompra('${c._key}')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="icon-btn del" onclick="eliminarCompra('${c._key}')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+    </div>`;
+  return div;
+}
+
+// ── CRUD Items ───────────────────────────────────────────────────────
+window.guardarItem = async function() {
+  const nombre = document.getElementById('f-nombre').value.trim();
+  if(!nombre){ toast('El nombre es obligatorio','error'); return; }
+  const btn = document.getElementById('btn-guardar-item');
+  btn.textContent='Guardando...'; btn.disabled=true;
+  const prev = document.getElementById('preview-img');
+  const imagen = prev.style.display!=='none' ? prev.src : '';
+  const data = {
+    nombre,
+    categoria: document.getElementById('f-categoria').value,
+    estado: document.getElementById('f-estado').value,
+    cantidad: parseInt(document.getElementById('f-cantidad').value)||1,
+    ubicacion: document.getElementById('f-ubicacion').value.trim(),
+    marca: document.getElementById('f-marca').value.trim(),
+    descripcion: document.getElementById('f-descripcion').value.trim(),
+    imagen
+  };
+  setSyncStatus('syncing');
+  try {
+    const key = editandoId || uid();
+    await set(ref(db,'items/'+key), data);
+    setSyncStatus('ok');
+    toast(editandoId?'Ítem actualizado ✓':'Ítem guardado ✓','success');
+    cerrarModal();
+  } catch(e) { setSyncStatus('error'); toast('Error al guardar','error'); }
+  btn.textContent='Guardar ítem'; btn.disabled=false;
+};
+
+window.eliminarItem = async function(key) {
+  if(!confirm('¿Eliminar este ítem del inventario?')) return;
+  setSyncStatus('syncing');
+  try { await remove(ref(db,'items/'+key)); toast('Ítem eliminado'); setSyncStatus('ok'); }
+  catch(e){ toast('Error al eliminar','error'); setSyncStatus('error'); }
+};
+
+window.editarItem = function(key) {
+  const item = itemsData[key];
+  if(!item) return;
+  editandoId = key;
+  document.getElementById('modal-inv-title').textContent='EDITAR ÍTEM';
+  document.getElementById('edit-id').value=key;
+  document.getElementById('f-nombre').value=item.nombre||'';
+  document.getElementById('f-categoria').value=item.categoria||'herramienta';
+  document.getElementById('f-estado').value=item.estado||'disponible';
+  document.getElementById('f-cantidad').value=item.cantidad||1;
+  document.getElementById('f-ubicacion').value=item.ubicacion||'';
+  document.getElementById('f-marca').value=item.marca||'';
+  document.getElementById('f-descripcion').value=item.descripcion||'';
+  const prev=document.getElementById('preview-img');
+  if(item.imagen){ prev.src=item.imagen; prev.style.display='block'; }
+  else{ prev.src=''; prev.style.display='none'; }
+  document.getElementById('modal-inventario').classList.add('open');
+  cerrarDetalle();
+};
+
+// ── CRUD Compras ─────────────────────────────────────────────────────
+window.guardarCompra = async function() {
+  const nombre = document.getElementById('cf-nombre').value.trim();
+  if(!nombre){ toast('El nombre es obligatorio','error'); return; }
+  const btn=document.getElementById('btn-guardar-compra');
+  btn.textContent='Guardando...'; btn.disabled=true;
+  const data = {
+    nombre,
+    urgencia: document.getElementById('cf-urgencia').value,
+    cantidad: document.getElementById('cf-cantidad').value.trim(),
+    proveedor: document.getElementById('cf-proveedor').value.trim(),
+    notas: document.getElementById('cf-notas').value.trim(),
+    done: false
+  };
+  setSyncStatus('syncing');
+  try {
+    const key = editandoCompraId || uid();
+    if(editandoCompraId && comprasData[editandoCompraId]) data.done = comprasData[editandoCompraId].done||false;
+    await set(ref(db,'compras/'+key), data);
+    setSyncStatus('ok');
+    toast(editandoCompraId?'Compra actualizada ✓':'Compra agregada ✓','success');
+    cerrarModalCompra();
+  } catch(e){ setSyncStatus('error'); toast('Error al guardar','error'); }
+  btn.textContent='Agregar a lista'; btn.disabled=false;
+};
+
+window.toggleCompra = async function(key) {
+  const c = comprasData[key];
+  if(!c) return;
+  setSyncStatus('syncing');
+  try {
+    await set(ref(db,'compras/'+key), {...c, done:!c.done});
+    setSyncStatus('ok');
+  } catch(e){ setSyncStatus('error'); }
+};
+
+window.eliminarCompra = async function(key) {
+  if(!confirm('¿Eliminar este ítem de la lista?')) return;
+  setSyncStatus('syncing');
+  try { await remove(ref(db,'compras/'+key)); toast('Ítem eliminado'); setSyncStatus('ok'); }
+  catch(e){ toast('Error al eliminar','error'); setSyncStatus('error'); }
+};
+
+window.editarCompra = function(key) {
+  const c = comprasData[key];
+  if(!c) return;
+  editandoCompraId=key;
+  document.getElementById('edit-compra-id').value=key;
+  document.getElementById('cf-nombre').value=c.nombre||'';
+  document.getElementById('cf-urgencia').value=c.urgencia||'media';
+  document.getElementById('cf-cantidad').value=c.cantidad||'';
+  document.getElementById('cf-proveedor').value=c.proveedor||'';
+  document.getElementById('cf-notas').value=c.notas||'';
+  document.getElementById('modal-compra').classList.add('open');
+};
+
+window.limpiarComprasCompletadas = async function() {
+  const completadas = Object.entries(comprasData).filter(([k,v])=>v.done);
+  if(completadas.length===0){ toast('No hay compras completadas'); return; }
+  if(!confirm(`¿Eliminar ${completadas.length} compra(s) completada(s)?`)) return;
+  setSyncStatus('syncing');
+  try {
+    await Promise.all(completadas.map(([k])=>remove(ref(db,'compras/'+k))));
+    toast('Compras completadas eliminadas','success'); setSyncStatus('ok');
+  } catch(e){ toast('Error','error'); setSyncStatus('error'); }
+};
+
+// ── Detalle ──────────────────────────────────────────────────────────
+window.verDetalle = function(key) {
+  const item = itemsData[key];
+  if(!item) return;
+  document.getElementById('detalle-content').innerHTML=`
+    ${item.imagen?`<img class="detail-img" src="${item.imagen}" alt="${item.nombre}">`:''}
+    <div class="detail-body">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span class="item-cat-badge badge-${item.categoria}">${catLabel[item.categoria]||''}</span>
+        <span style="font-size:12px;color:${estadoColor[item.estado]||'#666'};font-weight:500;">${estadoLabel[item.estado]||''}</span>
+      </div>
+      <div class="detail-name">${item.nombre||''}</div>
+      ${item.marca?`<div style="font-size:13px;color:var(--text3);font-family:var(--font-mono);margin-bottom:12px;">${item.marca}</div>`:''}
+      <div class="detail-desc">${item.descripcion||'Sin descripción.'}</div>
+      <div class="detail-grid">
+        <div class="detail-field"><div class="detail-field-label">Cantidad</div><div class="detail-field-val">${item.cantidad||1}</div></div>
+        <div class="detail-field"><div class="detail-field-label">Ubicación</div><div class="detail-field-val">${item.ubicacion||'—'}</div></div>
+      </div>
+    </div>`;
+  document.getElementById('btn-edit-detalle').onclick=()=>editarItem(key);
+  document.getElementById('modal-detalle').classList.add('open');
+};
+
+// ── UI helpers ───────────────────────────────────────────────────────
+window.entrar = function() {
+  const p=document.getElementById('portada');
+  p.style.transition='opacity 0.5s'; p.style.opacity='0';
+  setTimeout(()=>{ p.style.display='none'; document.getElementById('app').className='app visible'; },500);
+};
+window.cambiarTab = function(tab) {
+  tabActual=tab;
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  const map={todo:'sec-todo',herramienta:'sec-herramienta',consumible:'sec-consumible',equipo:'sec-equipo',compras:'sec-compras'};
+  document.getElementById(map[tab]).classList.add('active');
+  document.getElementById('toolbar-inventario').style.display=tab==='compras'?'none':'flex';
+};
+window.abrirModal = function() {
+  editandoId=null;
+  document.getElementById('modal-inv-title').textContent='NUEVO ÍTEM';
+  document.getElementById('edit-id').value='';
+  ['f-nombre','f-ubicacion','f-marca','f-descripcion'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-categoria').value='herramienta';
+  document.getElementById('f-estado').value='disponible';
+  document.getElementById('f-cantidad').value='1';
+  const prev=document.getElementById('preview-img'); prev.src=''; prev.style.display='none';
+  document.getElementById('f-imagen').value='';
+  document.getElementById('btn-guardar-item').textContent='Guardar ítem';
+  document.getElementById('modal-inventario').classList.add('open');
+};
+window.cerrarModal=()=>document.getElementById('modal-inventario').classList.remove('open');
+window.abrirModalCompra=function(){
+  editandoCompraId=null;
+  ['cf-nombre','cf-cantidad','cf-proveedor','cf-notas'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('cf-urgencia').value='media';
+  document.getElementById('btn-guardar-compra').textContent='Agregar a lista';
+  document.getElementById('modal-compra').classList.add('open');
+};
+window.cerrarModalCompra=()=>document.getElementById('modal-compra').classList.remove('open');
+window.cerrarDetalle=()=>document.getElementById('modal-detalle').classList.remove('open');
+
+window.previewImagen=function(input){
+  if(input.files&&input.files[0]){
+    const r=new FileReader();
+    r.onload=e=>{ const p=document.getElementById('preview-img'); p.src=e.target.result; p.style.display='block'; };
+    r.readAsDataURL(input.files[0]);
+  }
+};
+
+['modal-inventario','modal-compra','modal-detalle'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(e){ if(e.target===this) this.classList.remove('open'); });
+});
+
+// ── Exportar Excel ───────────────────────────────────────────────────
+window.exportarExcel = function() {
+  if(typeof XLSX==='undefined'){
+    toast('Cargando librería, reintentando...','error');
+    setTimeout(()=>{ if(typeof XLSX!=='undefined') window.exportarExcel(); else toast('Sin conexión para cargar Excel','error'); }, 2500);
+    return;
+  }
+  const items=Object.values(itemsData);
+  const compras=Object.values(comprasData);
+  if(items.length===0&&compras.length===0){ toast('No hay datos para exportar'); return; }
+  const wb=XLSX.utils.book_new();
+  const hdr=['Categoría','Nombre','Marca/Modelo','Estado','Cantidad','Ubicación','Descripción'];
+  const row=i=>[catLabel[i.categoria]||i.categoria,i.nombre||'',i.marca||'',estadoLabel[i.estado]||i.estado||'',i.cantidad||1,i.ubicacion||'',i.descripcion||''];
+  const ws=XLSX.utils.aoa_to_sheet([hdr,...items.map(row)]);
+  ws['!cols']=[14,28,22,18,10,16,40].map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb,ws,'Inventario');
+  ['herramienta','consumible','equipo'].forEach(cat=>{
+    const sub=items.filter(i=>i.categoria===cat);
+    if(!sub.length) return;
+    const w=XLSX.utils.aoa_to_sheet([hdr,...sub.map(row)]);
+    w['!cols']=[14,28,22,18,10,16,40].map(w=>({wch:w}));
+    XLSX.utils.book_append_sheet(wb,w,catLabel[cat]+'s');
+  });
+  if(compras.length){
+    const ch=['Nombre','Urgencia','Cantidad','Proveedor','Notas','Estado'];
+    const cr=c=>[c.nombre||'',c.urgencia?c.urgencia[0].toUpperCase()+c.urgencia.slice(1):'',c.cantidad||'',c.proveedor||'',c.notas||'',c.done?'Comprado':'Pendiente'];
+    const wc=XLSX.utils.aoa_to_sheet([ch,...compras.map(cr)]);
+    wc['!cols']=[28,12,16,22,30,12].map(w=>({wch:w}));
+    XLSX.utils.book_append_sheet(wb,wc,'Lista de Compras');
+  }
+  XLSX.writeFile(wb,`SOLGAR_Inventario_${new Date().toISOString().slice(0,10)}.xlsx`);
+  toast('Excel exportado ✓','success');
+};
+
+// ── Exportar Imagen ──────────────────────────────────────────────────
+window.exportarImagen = function() {
+  const items=Object.values(itemsData);
+  const compras=Object.values(comprasData);
+  if(items.length===0&&compras.length===0){ toast('No hay datos para exportar'); return; }
+  if(typeof html2canvas==='undefined'){
+    toast('Cargando librería, reintentando...','error');
+    setTimeout(()=>{ if(typeof html2canvas!=='undefined') window.exportarImagen(); else toast('Sin conexión para cargar la librería','error'); }, 2500);
+    return;
+  }
+  const fecha=new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'});
+  let html=`<div style="background:#0e0e0e;padding:40px;font-family:Arial,sans-serif;min-width:900px;">
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:8px;">
+      <div style="font-size:52px;font-weight:900;color:#e8a020;letter-spacing:10px;">SOLGAR</div>
+      <div style="font-size:11px;color:#6a6560;letter-spacing:3px;text-transform:uppercase;">Inventario del Taller</div>
+    </div>
+    <div style="font-size:12px;color:#6a6560;margin-bottom:28px;">Generado el ${fecha} · ${items.length} ítems · ${compras.filter(c=>!c.done).length} por comprar</div>
+    <div style="height:2px;background:#e8a020;margin-bottom:28px;"></div>`;
+  const catColor={herramienta:'#e8a020',consumible:'#3d9e5a',equipo:'#378add'};
+  [{cat:'herramienta',label:'Herramientas'},{cat:'consumible',label:'Consumibles'},{cat:'equipo',label:'Equipos'}].forEach(({cat,label})=>{
+    const sub=items.filter(i=>i.categoria===cat);
+    if(!sub.length) return;
+    html+=`<div style="margin-bottom:28px;"><div style="font-size:12px;font-weight:700;color:${catColor[cat]};letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #2a2a2a;">${label} (${sub.length})</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:#161616;">
+      <th style="text-align:left;padding:8px 10px;color:#6a6560;font-weight:500;border-bottom:1px solid #2a2a2a;font-size:10px;letter-spacing:1px;">NOMBRE</th>
+      <th style="text-align:left;padding:8px 10px;color:#6a6560;font-weight:500;border-bottom:1px solid #2a2a2a;font-size:10px;letter-spacing:1px;">MARCA</th>
+      <th style="text-align:center;padding:8px 10px;color:#6a6560;font-weight:500;border-bottom:1px solid #2a2a2a;font-size:10px;letter-spacing:1px;">CANT.</th>
+      <th style="text-align:left;padding:8px 10px;color:#6a6560;font-weight:500;border-bottom:1px solid #2a2a2a;font-size:10px;letter-spacing:1px;">ESTADO</th>
+      <th style="text-align:left;padding:8px 10px;color:#6a6560;font-weight:500;border-bottom:1px solid #2a2a2a;font-size:10px;letter-spacing:1px;">UBICACIÓN</th>
+    </tr></thead><tbody>`;
+    sub.forEach((item,idx)=>{
+      const bg=idx%2===0?'#0e0e0e':'#161616';
+      const ec={disponible:'#3d9e5a',en_uso:'#e8a020',mantenimiento:'#378add','dañado':'#e24b4a'}[item.estado]||'#666';
+      html+=`<tr style="background:${bg};">
+        <td style="padding:8px 10px;color:#f0ede8;font-weight:500;border-bottom:1px solid #1e1e1e;">${item.nombre||''}</td>
+        <td style="padding:8px 10px;color:#a09990;border-bottom:1px solid #1e1e1e;">${item.marca||'—'}</td>
+        <td style="padding:8px 10px;color:#f0ede8;text-align:center;font-weight:600;border-bottom:1px solid #1e1e1e;">${item.cantidad||1}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #1e1e1e;"><span style="color:${ec};font-weight:600;font-size:11px;">${estadoLabel[item.estado]||''}</span></td>
+        <td style="padding:8px 10px;color:#a09990;border-bottom:1px solid #1e1e1e;">${item.ubicacion||'—'}</td>
+      </tr>`;
+    });
+    html+=`</tbody></table></div>`;
+  });
+  if(compras.length){
+    html+=`<div style="margin-bottom:28px;"><div style="font-size:12px;font-weight:700;color:#e24b4a;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #2a2a2a;">Lista de Compras (${compras.length})</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:#161616;">
+      <th style="text-align:left;padding:8px 10px;color:#6a6560;font-weight:500;border-bottom:1px solid #2a2a2a;font-size:10px;letter-spacing:1px;">ÍTEM</th>
+      <th style="text-align:left;padding:8px 10px;color:#6a6560;font-weight:500;border-bottom:1px solid #2a2a2a;font-size:10px;letter-spacing:1px;">URGENCIA</th>
+      <th style="text-align:left;padding:8px 10px;color:#6a6560;font-weight:500;border-bottom:1px solid #2a2a2a;font-size:10px;letter-spacing:1px;">CANTIDAD</th>
+      <th style="text-align:left;padding:8px 10px;color:#6a6560;font-weight:500;border-bottom:1px solid #2a2a2a;font-size:10px;letter-spacing:1px;">PROVEEDOR</th>
+      <th style="text-align:left;padding:8px 10px;color:#6a6560;font-weight:500;border-bottom:1px solid #2a2a2a;font-size:10px;letter-spacing:1px;">ESTADO</th>
+    </tr></thead><tbody>`;
+    compras.forEach((c,idx)=>{
+      const bg=idx%2===0?'#0e0e0e':'#161616';
+      const uc={alta:'#e24b4a',media:'#e8a020',baja:'#3d9e5a'}[c.urgencia]||'#666';
+      html+=`<tr style="background:${bg};">
+        <td style="padding:8px 10px;color:${c.done?'#6a6560':'#f0ede8'};font-weight:500;border-bottom:1px solid #1e1e1e;text-decoration:${c.done?'line-through':'none'};">${c.nombre||''}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #1e1e1e;"><span style="color:${uc};font-weight:700;font-size:10px;">${(c.urgencia||'').toUpperCase()}</span></td>
+        <td style="padding:8px 10px;color:#a09990;border-bottom:1px solid #1e1e1e;">${c.cantidad||'—'}</td>
+        <td style="padding:8px 10px;color:#a09990;border-bottom:1px solid #1e1e1e;">${c.proveedor||'—'}</td>
+        <td style="padding:8px 10px;color:${c.done?'#3d9e5a':'#e8a020'};font-weight:600;border-bottom:1px solid #1e1e1e;">${c.done?'Comprado':'Pendiente'}</td>
+      </tr>`;
+    });
+    html+=`</tbody></table></div>`;
+  }
+  html+=`<div style="margin-top:20px;padding-top:14px;border-top:1px solid #2a2a2a;font-size:10px;color:#3a3a3a;letter-spacing:2px;">SOLGAR · SISTEMA DE INVENTARIO</div></div>`;
+  const wrap=document.createElement('div');
+  wrap.style.cssText='position:fixed;left:-9999px;top:0;z-index:-1;';
+  wrap.innerHTML=html;
+  document.body.appendChild(wrap);
+  html2canvas(wrap.firstChild,{backgroundColor:'#0e0e0e',scale:2,useCORS:true,logging:false}).then(canvas=>{
+    document.body.removeChild(wrap);
+    const link=document.createElement('a');
+    link.download=`SOLGAR_Inventario_${new Date().toISOString().slice(0,10)}.png`;
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    toast('Imagen exportada ✓','success');
+  }).catch(()=>{ document.body.removeChild(wrap); toast('Error al generar imagen','error'); });
+};
+
+</script>
+
+<!-- Librerías de exportación con múltiples fuentes de respaldo -->
+<script>
+function cargarScript(urls, idx) {
+  if(idx >= urls.length) return;
+  const s = document.createElement('script');
+  s.src = urls[idx];
+  s.onerror = () => cargarScript(urls, idx + 1);
+  document.head.appendChild(s);
+}
+// XLSX - 3 fuentes de respaldo
+cargarScript([
+  'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+  'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+  'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js'
+], 0);
+// html2canvas - 3 fuentes de respaldo
+cargarScript([
+  'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+  'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+  'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'
+], 0);
+</script>
+
+
+</body></html>
