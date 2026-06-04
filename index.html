@@ -1754,6 +1754,19 @@ cargarScript([
   'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
   'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'
 ], 0);
+
+    // ===== SOLGAR: Asignación automática de imágenes desde Claude =====
+    window.solgarSetImagen = async function(itemId, base64DataUrl) {
+      try {
+        const { getDatabase, ref, update } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js");
+        const { getApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+        const database = getDatabase(getApp());
+        const itemRef = ref(database, 'inventario/' + itemId);
+        await update(itemRef, { imagen: base64DataUrl });
+        console.log('[SOLGAR] Imagen OK para:', itemId);
+        return true;
+      } catch(e) { console.error('[SOLGAR] Error:', e); return false; }
+    };
 </script>
 
 
